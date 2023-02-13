@@ -1,70 +1,94 @@
 import { useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Alert } from "react-native";
 import CheckBox from "./CheckBox";
-import FingerPrintIcon from 'react-native-vector-icons/FontAwesome5';
 import Button from "./Button";
 import Input from "./Input";
 import { useNavigation } from "@react-navigation/native";
-import FingerPrint from "./FingerPrint";
+import FingerButton from "./FingerButton";
+import { SignIn } from "../firebase/Firebase";
+import { setUser } from "../redux/User";
+import { useDispatch } from "react-redux";
 
 function InputForm(){
     const navigate = useNavigation();
+    const dispatch = useDispatch();
 
     const [remember, setRemember] = useState(false);
-
-    const [finger, showFinger] = useState(false);
+    
+    
 
     const [userData, setuserData] = useState({username:'', password:''});
     function getData(name, value){
         //const {value, name} = e.target;
         setuserData({...userData, [name]: value});
     }
-    function Login(){
+
+    async function Login(){
         //setuserData(...userData, {[name:]})
         console.log(userData);
-        //navigate.push('mobile', {x: 'mob'});
+        try {
+            
+            const res = await SignIn({email: userData.username+'@nbeBank.com', password: userData.password, returnSecureToken: true});
+            console.log(res);
+            dispatch(setUser(res));
+            setuserData({username:'', password:''});
+            navigate.push('home');
+        } catch (error) {
+            console.log(error.message);
+            if(error.message === 'Request failed with status code 400'){
+                Alert.alert('Please, Try again', 'Incorrect Credentials !!', [
+                    {
+                      text: 'OK',
+                      onPress: () => setuserData({username:'', password:''}),
+                      style: 'cancel',
+                    },
+                  ]);
+            }
+           
+        }
     }
 
     return(
-        <View>
-            <Input text="Username" icon_name="alternate-email" 
-            other={{onChangeText: getData.bind(this, 'username'),
-            value: userData.username}}/>
-            <Input text="Password" icon_name="lock-outline"  password_flag="true" 
-             other={{onChangeText: getData.bind(this, 'password'),
-             value: userData.password}}/>
-            <View style={styles.control}>
-            <CheckBox
-                onPress={() => setRemember(!remember)}
-                title="Remember me"
-                isChecked={remember}
-              />
-              <Pressable>
-                <Text style={[styles.text, {color: 'white'}]}>Forgot password?</Text>
-              </Pressable>
-            </View>
-            <View style={styles.btnContainer}>
-                <Button style={{width: '75%'}} onPress={Login}>Log In</Button>
-                {/* <View style={styles.login}>
-                    <Pressable >
-                        <Text style={styles.loginText}>Log In</Text>
+                <View style={{flex: 1}}>
+                    <Input text="Username" icon_name="alternate-email" 
+                    other={{onChangeText: getData.bind(this, 'username'),
+                    value: userData.username}}/>
+                    <Input text="Password" icon_name="lock-outline"  password_flag="true" 
+                    other={{onChangeText: getData.bind(this, 'password'),
+                    value: userData.password}}/>
+                    <View style={styles.control}>
+                    <CheckBox
+                        onPress={() => setRemember(!remember)}
+                        title="Remember me"
+                        isChecked={remember}
+                    />
+                    <Pressable>
+                        <Text style={[styles.text, {color: 'white'}]}>Forgot password?</Text>
                     </Pressable>
-                </View> */}
-                <View style={styles.finger}>
-                    <Pressable onPress={()=>showFinger(true)}>
-                        <FingerPrintIcon name='fingerprint' style={styles.fingerIcon} size={35}/>
-                        {finger ? <FingerPrint finger={finger} showFinger={showFinger}/> : ""}
-                    </Pressable>
+                    </View>
+                    <View style={styles.btnContainer}>
+                        <Button style={{width: '75%'}} onPress={Login}>Log In</Button>
+                        {/* <View style={styles.login}>
+                            <Pressable >
+                                <Text style={styles.loginText}>Log In</Text>
+                            </Pressable>
+                        </View> */}
+                        {/* <View style={styles.finger}>
+                            <Pressable onPress={()=>showFinger(true)}>
+                                <FingerPrintIcon name='fingerprint' style={styles.fingerIcon} size={35}/>
+                                {finger ? <FingerPrint finger={finger} showFinger={showFinger}/> : ""}
+                            </Pressable>
+                        </View> */}
+                        <FingerButton text={'Log in with your fingerprint'} size={35}/>
+                    </View>
+                    <View>
+                        <Text style={styles.account}>Don't have an account?  
+                            <Pressable onPress={()=>navigate.push('mobile', {x: 'mob'})} >
+                                <Text style={[styles.account, {color: '#F6A721', textDecorationLine: 'underline', fontFamily: 'Roboto-Bold'}]}> Sign Up</Text>
+                            </Pressable>
+                        </Text>
+                    </View>
                 </View>
-            </View>
-            <View>
-                <Text style={styles.account}>Don't have an account?  
-                    <Pressable onPress={()=>navigate.push('mobile', {x: 'mob'})} >
-                        <Text style={[styles.account, {color: '#F6A721', textDecorationLine: 'underline', fontFamily: 'Roboto-Bold'}]}> Sign Up</Text>
-                    </Pressable>
-                </Text>
-            </View>
-        </View>
     );
 }
 const styles = StyleSheet.create({
@@ -116,15 +140,15 @@ const styles = StyleSheet.create({
         marginTop: 0,
         margin: 20,
     },
-    finger: {
-        padding: 10,
-        borderColor: '#F6A721',
-        borderWidth: 1.5,
-        borderRadius: 12.5
-    },
-    fingerIcon:{
-        color: '#F6A721'
-    },
+    // finger: {
+    //     padding: 10,
+    //     borderColor: '#F6A721',
+    //     borderWidth: 1.5,
+    //     borderRadius: 12.5
+    // },
+    // fingerIcon:{
+    //     color: '#F6A721'
+    // },
     account:{
         textAlign: 'center',
         color: 'white',

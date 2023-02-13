@@ -1,8 +1,13 @@
+import { useNavigation } from "@react-navigation/native";
 import { View , StyleSheet, Text, ImageBackground, Image} from "react-native";
 import Button from "../components/Button";
-import Title from "../components/Title";
+
 function Congrats(){
-    
+    const navigate = useNavigation();
+
+    function login(){
+        navigate.navigate('home');
+    }
     return(
         
         // <ImageBackground source={require('./../assets/congrats.png')}
@@ -16,7 +21,7 @@ function Congrats(){
                         <Text style={styles.title}>Congratulations</Text>
                         <Text style={styles.subTitle}>You have successfully registered in NBE online banking service</Text>
                     </View>
-                    <Button style={styles.btn}>Finish</Button>
+                    <Button style={styles.btn} onPress={login}>Finish</Button>
             </View>
         </View>
     );

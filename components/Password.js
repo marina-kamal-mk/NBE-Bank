@@ -6,9 +6,13 @@ import Title from "./Title";
 import EyeIcon from 'react-native-vector-icons/Feather';
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { SignUp, Users } from "../firebase/Firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "../redux/User";
 
 function Password(){
     const navigate = useNavigation();
+    const dispatch = useDispatch();
 
     const[border , setBorder] = useState("white");
     const[border1 , setBorder1] = useState("white");
@@ -17,12 +21,13 @@ function Password(){
     const[secure , setSecure] = useState(true);
     const[secureConf , setSecure_Conf] = useState(true);
 
-    const[dotColor, setDotColor] = useState({
-        lowercase:'#B7B7B7', 
-        uppercase: '#B7B7B7', 
-        number:'#B7B7B7', 
-        special:'#B7B7B7',
-        length: '#B7B7B7'
+    
+    const[passFlag, setPassFlag] = useState({
+        lowercase: false, 
+        uppercase: false, 
+        number: false, 
+        special:false,
+        length: false
     });
     
     const[error, setError] = useState('');
@@ -51,27 +56,44 @@ function Password(){
 
         const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
         //console.log(!(/[a-z]/.test(data.password)))
-        
-        if(data.password.length >= 8) setDotColor(color=> {return{...color, length: '#007236'}});
-        else if(data.password.length < 8) setDotColor(color=> {return{...color, length: '#B7B7B7'}});
-        if(/[a-z]/.test(data.password)) setDotColor(color=> {return{...color, lowercase: '#007236'}});
-        else if(!(/[a-z]/.test(data.password))) setDotColor(color=> {return{...color, lowercase: '#B7B7B7'}});
-        if(/[A-Z]/.test(data.password)) setDotColor(color=> {return{...color, uppercase: '#007236'}});
-        else if(!(/[A-Z]/.test(data.password))) setDotColor(color=> {return{...color, uppercase: '#B7B7B7'}});
-        if(/[0-9]/.test(data.password)) setDotColor(color=> {return{...color, number: '#007236'}});
-        else if(!(/[0-9]/.test(data.password))) setDotColor(color=> {return{...color, number: '#B7B7B7'}});
-        if(specialChars.test(data.password)) setDotColor(color=> {return{...color, special: '#007236'}});
-        else if(!(specialChars.test(data.password))) setDotColor(color=> {return{...color, special: '#B7B7B7'}});
+        if(name === 'password'){
+
+            if(value.length >= 8) setPassFlag(color=> {return{...color, length: true}});
+            else if(value.length < 8) setPassFlag(color=> {return{...color, length: false}});
+            if(/[a-z]/.test(value)) setPassFlag(color=> {return{...color, lowercase: true}});
+            else if(!(/[a-z]/.test(value))) setPassFlag(color=> {return{...color, lowercase: false}});
+            if(/[A-Z]/.test(value)) setPassFlag(color=> {return{...color, uppercase: true}});
+            else if(!(/[A-Z]/.test(value))) setPassFlag(color=> {return{...color, uppercase: false}});
+            if(/[0-9]/.test(value)) setPassFlag(color=> {return{...color, number: true}});
+            else if(!(/[0-9]/.test(value))) setPassFlag(color=> {return{...color, number: false}});
+            if(specialChars.test(value)) setPassFlag(color=> {return{...color, special: true}});
+            else if(!(specialChars.test(value))) setPassFlag(color=> {return{...color, special: false}});
+        }
     }
 
-    function Submit(){
+    const mobile = useSelector(state=> state.Mobile.mobile);
+ 
+    async function Submit(){
         if(data.password === '') {setBorder1('#ff0000'); return; }
         if(data.confirmPassword === '') {setBorder('#ff0000'); return; }
         if(data.password !== data.confirmPassword) {setError('Not Matching Passwords'); return;}
-        if(dotColor.length !== '#007236' ||
-        dotColor.lowercase !== '#007236' || dotColor.uppercase !== '#007236' || dotColor.number !== '#007236'
-        || dotColor.special !== '#007236') return;
-        navigate.push('final');
+        if(passFlag.length === false ||
+        passFlag.lowercase === false || passFlag.uppercase === false || passFlag.number === false
+        || passFlag.special === false) return;
+        
+        try {
+            
+            const res = await SignUp({email: '0'+mobile+'@nbeBank.com', password: data.password, returnSecureToken: true});
+            console.log(res)
+            dispatch(setUser(res));
+            const r = await Users({phone: res.email.split('@')[0], 
+            uid: res.localId});
+            console.log("r", r);
+            navigate.push('final');
+        } catch (error) {
+            console.log(error.message)
+
+        }
     }
 return(
     <View style={styles.container}>
@@ -110,21 +132,31 @@ return(
         <View style={styles.col}>
             <View>
                 <View style={styles.oneLine}>
-                    <Dot name="dot-fill" style={[{color: dotColor.lowercase}, {paddingRight: 10}]} size={23}/><Text style={styles.verf}>Lower case letter</Text>
+                    {passFlag.lowercase ? <Dot name="dot-fill" style={styles.lightDot} size={23}/>:
+                    <Dot name="dot-fill" style={styles.dot} size={23}/>}
+                    <Text style={styles.verf}>Lower case letter</Text>
                 </View>
                 <View style={styles.oneLine}>
-                    <Dot name="dot-fill" style={[{color: dotColor.length}, {paddingRight: 10}]} size={23}/><Text style={styles.verf}>Minimum 8 characters</Text>
+                    {passFlag.length ? <Dot name="dot-fill" style={styles.lightDot} size={23}/>:
+                    <Dot name="dot-fill" style={styles.dot} size={23}/>}
+                    <Text style={styles.verf}>Minimum 8 characters</Text>
                 </View>
                 <View style={styles.oneLine}>
-                    <Dot name="dot-fill" style={[{color: dotColor.special}, {paddingRight: 10}]} size={23}/><Text style={styles.verf}>Special character</Text>
+                    {passFlag.special ? <Dot name="dot-fill" style={styles.lightDot} size={23}/>:
+                    <Dot name="dot-fill" style={styles.dot} size={23}/>}
+                    <Text style={styles.verf}>Special character</Text>
                 </View>
             </View>
             <View>
                 <View style={styles.oneLine}>
-                    <Dot name="dot-fill" style={[{color: dotColor.uppercase}, {paddingRight: 10}]} size={23}/><Text style={styles.verf}>Upper case letter</Text>
+                    {passFlag.uppercase ? <Dot name="dot-fill" style={styles.lightDot} size={23}/>:
+                    <Dot name="dot-fill" style={styles.dot} size={23}/>}
+                    <Text style={styles.verf}>Upper case letter</Text>
                 </View>
                 <View style={styles.oneLine}>
-                    <Dot name="dot-fill" style={[{color: dotColor.number}, {paddingRight: 10}]} size={23}/><Text style={styles.verf}>Number</Text>
+                    {passFlag.number ? <Dot name="dot-fill" style={styles.lightDot} size={23}/>:
+                    <Dot name="dot-fill" style={styles.dot} size={23}/>}
+                    <Text style={styles.verf}>Number</Text>
                 </View>
             </View>
         </View>
@@ -192,6 +224,15 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto-Bold',
         fontSize: 16,
         marginTop: 15
+    },
+    dot:{
+        paddingRight: 10,
+        color: '#B7B7B7'
+    },
+    lightDot:{
+        paddingRight: 10,
+        color: '#007236'
     }
+
 });
 export default Password;

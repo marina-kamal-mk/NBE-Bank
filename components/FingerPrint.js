@@ -14,7 +14,7 @@ function FingerPrint(props){
         <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Fingerprint for NBE Mobile</Text>
-            <Text style={styles.modalSubText}>Log in with your fingerprint</Text>
+            <Text style={styles.modalSubText}>{props.text}</Text>
             <View style={styles.finger}>
                 <Image source={require('./../assets/print.png')} style={styles.image}/>
                 <Text style={[styles.modalSubText, {color: '#B7B7B7'}]}>Touch the fingerprint sensor</Text>

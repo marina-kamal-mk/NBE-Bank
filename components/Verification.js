@@ -3,13 +3,16 @@ import Button from "./Button";
 import Title from "./Title";
 import { useNavigation } from "@react-navigation/native";
 import { useState, useRef, useEffect} from "react";
+import { useSelector } from "react-redux";
+import MissionComplete from "./Beneficiaries/MissionComplete";
 
-function Verification(props){
+function Verification({msg}){
     const navigate = useNavigation();
-
+    const mobNumber = useSelector(state => state.Mobile.mobile);
     const [code, setCode] = useState();
     const [counter, setCounter] = useState(30);
-    
+    const [complete, showComplete] = useState(false);
+
     useEffect(()=>{
         setCode(Math.floor(Math.random()*90000) + 10000);
     },[setCode])
@@ -29,7 +32,6 @@ function Verification(props){
     const [otp, setOtp] = useState({1: '', 2: '', 3: '', 4: '', 5:''});
 
     const [errorMsg, seterrorMsg] = useState("")
-    const [borderColor, setborderColor] = useState('white');
     const [focus, setFocus] = useState({1:'white', 2: 'white', 3:'white', 4:'white', 5:'white'});
     function Submit(){
         if(otp[1] === '') {setFocus({...focus,1:'#ff0000'}); return};
@@ -42,13 +44,12 @@ function Verification(props){
         {
             console.log('wrong')
             seterrorMsg("Wrong Code");
-            //new_Code(); 
-            //setCode(Math.floor(Math.random()*90000) + 10000);
             setOtp({1: '', 2: '', 3: '', 4: '', 5:''});
             return;
         }
         setOtp({1: '', 2: '', 3: '', 4: '', 5:''});
-        navigate.push('mobile', {x: 'password'});
+        if(msg) showComplete(true);
+        else navigate.push('mobile', {x: 'password'});
     }
     function new_Code(){
         seterrorMsg('');
@@ -64,14 +65,13 @@ function Verification(props){
 return(
     <View style={styles.container}>
         <Title title="Verification" 
-        subtitle= "Enter 5 digit code we sent to"
-        mobile={props.mobile}
+        subtitle= {"Enter 5 digit code we sent to" + " "+"+2 0"+ mobNumber}
         />
         <View style={styles.verifyCode}>
             <View style={[styles.inputText, {borderColor: focus[1]}]}>
                 <TextInput maxLength={1} keyboardType='number-pad' style={styles.input}
                 placeholder='_'
-                onChangeText={text => {setOtp({...otp, 1:text}); text && secondInput.current.focus(); seterrorMsg(''); setborderColor('white');}}
+                onChangeText={text => {setOtp({...otp, 1:text}); text && secondInput.current.focus(); seterrorMsg('');}}
                 ref={firstInput} value={otp[1]}
                 onFocus={()=> setFocus({...focus, 1:'#007236'})}
                 onBlur={()=>setFocus({...focus, 1:'white'})}/>
@@ -79,7 +79,7 @@ return(
             <View style={[styles.inputText,  {borderColor: focus[2]}]}>
                 <TextInput maxLength={1} keyboardType='number-pad' style={styles.input}
                 placeholder='_'
-                onChangeText={text => {setOtp({...otp, 2:text}); text && thirdInput.current.focus(); seterrorMsg(''); setborderColor('white');}} 
+                onChangeText={text => {setOtp({...otp, 2:text}); text && thirdInput.current.focus(); seterrorMsg('');}} 
                 ref={secondInput} value={otp[2]}
                 onFocus={()=> setFocus({...focus, 2:'#007236'})}
                 onBlur={()=>setFocus({...focus, 2:'white'})}/>
@@ -87,7 +87,7 @@ return(
             <View style={[styles.inputText,  {borderColor: focus[3]}]}>
                 <TextInput maxLength={1} keyboardType='number-pad' style={styles.input}
                 placeholder='_'
-                onChangeText={text => {setOtp({...otp, 3:text}); text && fourthInput.current.focus(); seterrorMsg(''); setborderColor('white');}}
+                onChangeText={text => {setOtp({...otp, 3:text}); text && fourthInput.current.focus(); seterrorMsg('');}}
                 ref={thirdInput} value={otp[3]}
                 onFocus={()=> setFocus({...focus, 3:'#007236'})}
                 onBlur={()=>setFocus({...focus, 3:'white'})}/>
@@ -95,7 +95,7 @@ return(
             <View style={[styles.inputText, {borderColor: focus[4]}]}>
                 <TextInput maxLength={1} keyboardType='number-pad' style={styles.input}
                 placeholder='_'
-                onChangeText={text => {setOtp({...otp, 4:text}); text && fifthInput.current.focus(); seterrorMsg(''); setborderColor('white');}}
+                onChangeText={text => {setOtp({...otp, 4:text}); text && fifthInput.current.focus(); seterrorMsg('');}}
                 ref={fourthInput} value={otp[4]}
                 onFocus={()=> setFocus({...focus, 4:'#007236'})}
                 onBlur={()=>setFocus({...focus, 4:'white'})}/>
@@ -103,7 +103,7 @@ return(
             <View style={[styles.inputText, {borderColor: focus[5]}]}>
                 <TextInput maxLength={1} keyboardType='number-pad' style={styles.input}
                 placeholder='_'
-                onChangeText={text => {setOtp({...otp, 5:text}); text && fifthInput.current.blur(); seterrorMsg(''); setborderColor('white');}}
+                onChangeText={text => {setOtp({...otp, 5:text}); text && fifthInput.current.blur(); seterrorMsg('');}}
                 ref={fifthInput} value={otp[5]}
                 onFocus={()=> setFocus({...focus, 5:'#007236'})}
                 onBlur={()=>setFocus({...focus, 5:'white'})}/>
@@ -120,7 +120,9 @@ return(
                 <Text style={styles.send}>Send a new one</Text>
             </Pressable>
             }
-            
+            {
+                complete ? <MissionComplete showComplete={showComplete} complete={complete} msg={msg}/>:''
+            }
         </View>
         <Button style={styles.footer} onPress={Submit}>Submit</Button>
     </View>
