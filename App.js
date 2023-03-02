@@ -12,6 +12,7 @@ import Beneficiaries from "./screens/Beneficiaries";
 import AddBenf from "./components/Beneficiaries/AddBenf";
 import TransactionHistory from "./components/Beneficiaries/TransactionHistory";
 import AddHistory from "./components/Beneficiaries/AddHistory";
+import AirPay from "./screens/AirPay";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Image } from "react-native";
@@ -79,7 +80,7 @@ function HomeNav() {
       <Tab.Screen name="Transfer" component={AddHistory} options={{headerShown: false}}/>
       <Tab.Screen name="Beneficiaries" component={Benf_screens} options={{headerShown: false}}/>
       <Tab.Screen name="ATMs" component={Transfer} options={{headerShown: false}}/>
-      <Tab.Screen name="Air Pay" component={Transfer} options={{headerShown: false}}/>
+      <Tab.Screen name="Air Pay" component={AirPay} options={{headerShown: false}}/>
     </Tab.Navigator>
   );
 }
