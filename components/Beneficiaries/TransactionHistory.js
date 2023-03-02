@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { useSelector } from "react-redux";
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useLayoutEffect} from 'react';
 import EmptyHistory from "./EmptyHistory";
 import { get_history } from "../../firebase/Firebase";
 import Row from "./Row";
@@ -29,9 +29,7 @@ function TransactionHistory(){
     const benf = useSelector(state => state.Benf.benf);
     const user = useSelector(state => state.User.currentUser);
     const personId = useSelector(state=> state.History.id);
-    console.log(personId)
     const person = benf.filter(item => item.id === personId);
-    console.log(person, "pppppppp")
     const [hist, setHist] = useState([]);
 
     const [transfer, setTransfer] = useState(false);

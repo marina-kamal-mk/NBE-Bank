@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, Pressable, TextInput } from "react-native";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EyeIcon from 'react-native-vector-icons/Feather';
 import { useState } from "react";
+import { useSelector } from "react-redux";
 
 function Input(props){
     const {text, password_flag, icon_name, other } = props;
@@ -20,9 +21,11 @@ function Input(props){
         else setIcon("eye");
         setSecure(!secure);
     }
+    const language = useSelector(state => state.Lang.lang);
+
 return(
-    <View style={[styles.inputContainer, style]}>
-        <View style={styles.inputText}>
+    <View style={[styles.inputContainer,language ? {flexDirection: 'row'}:{flexDirection: 'row-reverse'}, style]}>
+        <View style={[styles.inputText, language ? {flexDirection: 'row'}:{flexDirection: 'row-reverse'}]}>
             <Icon name={icon_name} size={30} style={[styles.icon, {color: iconColor}]}/>
             <View>
                 <Text style={[styles.text, {color: color}]}>{text}</Text>
@@ -45,34 +48,21 @@ return(
 const styles=StyleSheet.create({
     inputText: {
         display: 'flex',
-        flexDirection: 'row',
-        // borderColor: 'rgba(255, 255, 255, 0.5)',
-        // borderRadius: 10,
-        // borderWidth: 1.5,
-        // margin: 20,
-        // backgroundColor: 'rgba(0, 0, 0, 0.3)',
-        // marginTop: 5
+        //flexDirection: 'row',
     },
     text:{
-        //color: 'white',
         fontSize: 16,
         padding: 4,
         fontFamily: 'Roboto-Regular'
     },
     icon:{
-        //color: 'white',
         margin: 10
     },
     inputContainer:{
         display: 'flex',
-        flexDirection: 'row',
+        //flexDirection: 'row',
         justifyContent: 'space-between',
         alignContent: 'space-between',
-        //borderColor: '#007236',
-        // borderRadius: 10,
-        // borderWidth: 1.5,
-        // marginTop: 20,
-        // backgroundColor: 'white'
         borderColor: 'rgba(255, 255, 255, 0.5)',
         borderRadius: 10,
         borderWidth: 1.5,

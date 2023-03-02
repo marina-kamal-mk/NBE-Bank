@@ -48,7 +48,8 @@ function SendMoney(){
                     <Text style={styles.viewBtn}>View All</Text>
                 </Pressable>
             </View>
-            <FlatList data={benf} renderItem={Card} horizontal={true}/>
+            <FlatList data={benf} renderItem={Card} horizontal={true}
+            keyExtractor={item => item.id}/>
         </View>
     )
 }

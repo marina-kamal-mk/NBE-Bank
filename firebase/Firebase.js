@@ -19,14 +19,29 @@ export async function Users(user){
     const res = await axios.post(URL+`Users/${user.phone}.json`, user);
     return res.data;
 }
-export async function updateUser(phone, data){
-    const res = await axios.post(URL+`Users/${phone}.json`, data);
+export async function updateUser(phone, id, data){
+    const res = await axios.put(URL+`Users/${phone}/${id}.json`, data);
     return res.data;
 }
 
 export async function getUsersByMob(mob){
     const res = await axios.get(URL+`Users/${mob}.json`);
-    return res.data
+    if(res.data){
+
+        var user=[]
+        for(const key in res.data){
+            var x = {
+                id: key,
+                phone: res.data[key].phone,
+                uid: res.data[key].uid,
+                profile: res.data[key].profile,
+                userName: res.data[key].userName,
+            }
+            user.push(x);
+        }
+        return user;
+    }
+    else return [];
 }
 
 export async function Add_Benf(uid, user){
@@ -82,6 +97,10 @@ export async function get_history(id){
         return benf;
     }
     else return [];
+}
+
+export async function delete_history(id){
+    await axios.delete(URL+`History/${id}.json`);
 }
 
 

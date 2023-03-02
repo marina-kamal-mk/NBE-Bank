@@ -32,7 +32,8 @@ function History(){
                     <Text style={styles.viewBtn}>View All</Text>
                 </Pressable>
             </View>
-            <FlatList data={data} renderItem={card} style={styles.list}/>
+            <FlatList data={data} renderItem={card} style={styles.list}
+            keyExtractor={item => item.id}/>
         </View>
     )
 }

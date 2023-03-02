@@ -30,7 +30,7 @@ function MobileNumber(){
             return;
         }
         const r = await getUsersByMob(0+mob);
-        if(r !== null)
+        if(r.length !== 0)
         {
             setError('Mobile number already exists.');
             return;

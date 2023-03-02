@@ -1,11 +1,15 @@
 import { View , StyleSheet, Text} from "react-native";
+import { useSelector } from "react-redux";
+import { footer } from "../language";
 
 function Footer(){
+    const language = useSelector(state => state.Lang.lang);
+    
     return(
         <View style={{flex:1,justifyContent:'flex-end' }}>        
             <View style={styles.footer}>
-                <Text style={styles.text}>Contact Us - FAQs - Help</Text>
-                <Text style={[styles.text, {color:'white', fontSize: 12, fontFamily: 'Roboto-Regular'}]}>Copyright © NBE 2021 All Rights Reserved - National Bank of Egypt</Text>
+                <Text style={styles.text}>{language ? footer.en.one: footer.ar.one}</Text>
+                <Text style={[styles.text, {color:'white', fontSize: 12, fontFamily: 'Roboto-Regular'}]}>{language ? footer.en.two: footer.ar.two}</Text>
             </View>
         </View>
 

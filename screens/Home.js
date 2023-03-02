@@ -1,4 +1,5 @@
 import { View, StyleSheet } from "react-native";
+import { useSelector } from "react-redux";
 import Header from "../components/Home/Header";
 import Balance from "../components/Home/Balance";
 import Options from "../components/Home/Options";
@@ -7,13 +8,18 @@ import History from "../components/Home/History";
 import Cards from "../components/Home/Cards";
 
 function Home(){
+    const card = useSelector(state=> state.Cards.cards);
     return(
         <View style={styles.home}>
             <Header/>
+            {card ? 
+            <Cards/>:
+            <>
             <Balance/>
-            {/* <Cards/> */}
             <Options/>
             <SendMoney/>
+            </>
+        }
             <History/>
         </View>
     )
